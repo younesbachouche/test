@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>beIN Sports Channels</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f0f0f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 20px auto;
+    }
+    .channel-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .channel-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex: 1 1 calc(33.333% - 20px);
+      align-items: center;
+      padding: 20px;
+      box-sizing: border-box;
+      transition: transform 0.2s;
+      cursor: pointer;
+    }
+    .channel-card img {
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      margin-right: 20px;
+    }
+    .channel-card h2 {
+      font-size: 1.5em;
+      margin: 0;
+    }
+    .channel-card:hover {
+      transform: translateY(-5px);
+    }
+    .player-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s, opacity 0.5s;
+      z-index: 1000;
+    }
+    .player-container.visible {
+      visibility: visible;
+      opacity: 1;
+    }
+    #closePlayer {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 2rem;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      z-index: 1100;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: white;
+      overflow-x: auto; /* Enable horizontal scrolling on small screens */
+    }
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #f4f4f4;
+      font-weight: bold;
+      color: #333;
+      text-transform: uppercase;
+    }
+    td {
+      color: #666;
+    }
+    img.club-logo {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    .start-time {
+      white-space: nowrap; /* Prevent text wrapping */
+    }
+    .live-indicator {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: red;
+      margin-left: 5px;
+      vertical-align: middle;
+    }
+    .server-access {
+      text-align: center;
+    }
+    .access-server-btn {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .access-server-btn:hover {
+      background-color: #0056b3;
+    }
+    @media (max-width: 768px) {
+      .channel-card {
+        flex: 1 1 calc(50% - 20px);
+      }
+      table {
+        min-width: 100%; /* Ensure table expands to full width on small screens */
+      }
+    }
+    @media (max-width: 480px) {
+      .channel-card {
+        flex: 1 1 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>beIN Sports Channels</h1>
+    <div class="channel-list" id="channelList"></div>
+    <h2>Match Schedule</h2>
+    <table id="matchTable">
+      <thead>
+        <tr>
+          <th>Match</th>
+          <th>Date & Time</th>
+          <th>Access Server</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Match rows will be appended here by JavaScript -->
+      </tbody>
+    </table>
+    <div class="player-container" id="playerContainer">
+      <button id="closePlayer">&times;</button>
+      <video id="videoPlayer" controls></video>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const channels = [
+        {
+          name: "beIN Sports 1",
+          image: "https://seeklogo.com/images/B/bein-sports-1-logo-4E5E4AE6B8-seeklogo.com.png",
+          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"  // Replace with actual stream URL
+        },
+        {
+          name: "beIN Sports 2",
+          image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/BeIN_Sports_2_logo.svg/1200px-BeIN_Sports_2_logo.svg.png",
+          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"  // Replace with actual stream URL
+        },
+        {
+          name: "beIN Sports 3",
+          image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/BeIN_Sports_3_logo.svg/1200px-BeIN_Sports_3_logo.svg.png",
+          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"  // Replace with actual stream URL
+        },
+        {
+          name: "beIN Sports 4",
+          image: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/BeIN_Sports_4_logo.svg/1200px-BeIN_Sports_4_logo.svg.png",
+          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"  // Replace with actual stream URL
+        },
+        {
+          name: "beIN Sports 5",
+          image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/BeIN_Sports_5_logo.svg/1200px-BeIN_Sports_5_logo.svg.png",
+          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"  // Replace with actual stream URL
+        },
+        {
+          name: "beIN Sports 6",
+          image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/BeIN_Sports_6_logo.svg/1200px-BeIN_Sports_6_logo.svg.png",
+          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"  // Replace with actual stream URL
+        }
+      ];
+
+      const matches = [
+        {
+          home: {
+            name: "FC Barcelona",
+            logo: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg"
+          },
+          away: {
+            name: "Real Madrid",
+            logo: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg"
+          },
+          startTime: "2024-07-06T18:00:00",
+          endTime: "2024-07-06T20:00:00"  // This time is hidden and controlled in the code
+        },
+        {
+          home: {
+            name: "Manchester United",
+            logo: "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg"
+          },
+          away: {
+            name: "Liverpool",
+            logo: "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg"
+          },
+          startTime: "2024-07-07T18:00:00",
+          endTime: "2024-07-07T20:00:00"  // This time is hidden and controlled in the code
+        }
+      ];
+
+      const channelList = document.getElementById('channelList');
+      const matchTable = document.getElementById('matchTable').getElementsByTagName('tbody')[0];
+      const playerContainer = document.getElementById('playerContainer');
+      const videoPlayer = document.getElementById('videoPlayer');
+      const closePlayer = document.getElementById('closePlayer');
+
+      channels.forEach(channel => {
+        const channelCard = document.createElement('div');
+        channelCard.className = 'channel-card';
+        channelCard.innerHTML = `
+          <img src="${channel.image}" alt="${channel.name}">
+          <h2>${channel.name}</h2>
+        `;
+        channelCard.addEventListener('click', () => {
+          videoPlayer.src = channel.stream;
+          playerContainer.classList.add('visible');
+          videoPlayer.play();
+          videoPlayer.requestFullscreen();  // Enable full-screen mode
+        });
+        channelList.appendChild(channelCard);
+      });
+
+      matches.forEach(match => {
+        const matchRow = document.createElement('tr');
+        matchRow.innerHTML = `
+          <td>
+            <img class="club-logo" src="${match.home.logo}" alt="${match.home.name}"> ${match.home.name} vs
+            <img class="club-logo" src="${match.away.logo}" alt="${match.away.name}"> ${match.away.name}
+            <span class="live-indicator"></span>
+          </td>
+          <td class="start-time">${new Date(match.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+          <td class="server-access"></td>
+        `;
+        matchTable.appendChild(matchRow);
+
+        // Calculate and display match start time
+        const startTime = new Date(match.startTime);
+        const now = new Date();
+
+        // Show "Start Soon" icon before 30 minutes of match start
+        const startSoonTime = new Date(startTime);
+        startSoonTime.setMinutes(startSoonTime.getMinutes() - 30);
+
+        if (now < startSoonTime) {
+          const serverAccessCell = matchRow.querySelector('.server-access');
+          serverAccessCell.innerHTML = `<button class="access-server-btn">Access Server</button>`;
+          const accessBtn = serverAccessCell.querySelector('.access-server-btn');
+          accessBtn.addEventListener('click', () => {
+            // Replace with server access logic
+            console.log(`Accessing server for ${match.home.name} vs ${match.away.name}`);
+          });
+        } else {
+          // Show "Live" icon once the match starts
+          const matchCell = matchRow.querySelector('td:first-child');
+          matchCell.innerHTML += `<div class="live-indicator"></div>`;
+        }
+      });
+
+      closePlayer.addEventListener('click', () => {
+        playerContainer.classList.remove('visible');
+        videoPlayer.pause();
+        document.exitFullscreen();  // Exit full-screen mode
+      });
+    });
+  </script>
+</body>
+</html>
