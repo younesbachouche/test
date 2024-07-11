@@ -101,42 +101,6 @@
     .channel-card:hover {
       transform: translateY(-5px);
     }
-    .player-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      visibility: hidden;
-      opacity: 0;
-      transition: visibility 0s, opacity 0.5s;
-      z-index: 1000;
-    }
-    .player-container.visible {
-      visibility: visible;
-      opacity: 1;
-    }
-    #closePlayer {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 2rem;
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-      z-index: 1100;
-    }
-    video {
-      width: 80%;
-      height: auto;
-      max-width: 800px;
-      border-radius: 10px;
-    }
     @media (max-width: 768px) {
       .main {
         margin-left: 0;
@@ -181,10 +145,6 @@
       <h2>Algerian Channels</h2>
       <div class="channel-list" id="algerianChannelList"></div>
     </div>
-    <div class="player-container" id="playerContainer">
-      <button id="closePlayer">&times;</button>
-      <video id="videoPlayer" controls></video>
-    </div>
   </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -194,50 +154,47 @@
         {
           name: "beIN Sports 1",
           image: "https://assets.bein.com/mena/sites/4/2015/06/beIN_SPORTS1_DIGITAL_Mono.png",
-          stream: "https://bfcafd73471d.eu-west-1.playback.live-video.net/api/video/v1/eu-west-1.851725310951.channel.gS7ba2hr81mx.m3u8"
+          stream: "vlc://https://bfcafd73471d.eu-west-1.playback.live-video.net/api/video/v1/eu-west-1.851725310951.channel.gS7ba2hr81mx.m3u8"
         },
         {
           name: "beIN Sports 2",
           image: "https://assets.bein.com/mena/sites/4/2021/02/beIN_SPORTS2_DIGITAL_Mono.png",
-          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         },
         {
           name: "beIN Sports 3",
           image: "https://assets.bein.com/mena/sites/4/2015/06/beIN_SPORTS3_DIGITAL_Mono.png",
-          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         }
       ];
       const skyChannels = [
         {
           name: "Sky Sports 1",
           image: "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Sky_Sports_logo_2020.svg/1200px-Sky_Sports_logo_2020.svg.png",
-          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         },
         {
           name: "Sky Sports 2",
           image: "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Sky_Sports_logo_2020.svg/1200px-Sky_Sports_logo_2020.svg.png",
-          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         }
       ];
       const algerianChannels = [
         {
           name: "ENTV",
           image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/ENTV_logo.svg/1200px-ENTV_logo.svg.png",
-          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         },
         {
           name: "Canal Algérie",
           image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canal_Algérie_Logo.svg/1200px-Canal_Algérie_Logo.svg.png",
-          stream: "https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         }
       ];
 
       const beinChannelList = document.getElementById('beinChannelList');
       const skyChannelList = document.getElementById('skyChannelList');
       const algerianChannelList = document.getElementById('algerianChannelList');
-      const playerContainer = document.getElementById('playerContainer');
-      const videoPlayer = document.getElementById('videoPlayer');
-      const closePlayer = document.getElementById('closePlayer');
 
       const renderChannels = (channels, container) => {
         channels.forEach(channel => {
@@ -248,9 +205,7 @@
             <h3>${channel.name}</h3>
           `;
           channelCard.addEventListener('click', () => {
-            videoPlayer.src = channel.stream;
-            playerContainer.classList.add('visible');
-            videoPlayer.play();
+            window.open(channel.stream);
           });
           container.appendChild(channelCard);
         });
@@ -260,19 +215,12 @@
       renderChannels(skyChannels, skyChannelList);
       renderChannels(algerianChannels, algerianChannelList);
 
-      closePlayer.addEventListener('click', () => {
-        playerContainer.classList.remove('visible');
-        videoPlayer.pause();
-      });
-
       closeNavbar.addEventListener('click', () => {
         navbar.classList.remove('open');
       });
 
       document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-          playerContainer.classList.remove('visible');
-          videoPlayer.pause();
           navbar.classList.remove('open');
         }
       });
