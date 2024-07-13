@@ -11,6 +11,27 @@
       margin: 0;
       padding: 0;
       display: flex;
+      flex-direction: column;
+    }
+    .header {
+      background-color: #333;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      box-sizing: border-box;
+    }
+    .header h1 {
+      margin: 0;
+    }
+    .header .search-icon {
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: white;
+    }
+    .header .search-icon:hover {
+      color: #007bff;
     }
     .navbar {
       position: fixed;
@@ -101,6 +122,46 @@
     .channel-card:hover {
       transform: translateY(-5px);
     }
+    .popup {
+      background-color: #333;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      max-width: 80%;
+      text-align: center;
+      z-index: 1000;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+    .popup img {
+      width: 80px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    .popup h2 {
+      font-size: 1.2em;
+      margin: 10px 0;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 1.5rem;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .close-btn:hover {
+      color: #007bff;
+    }
     @media (max-width: 768px) {
       .main {
         margin-left: 0;
@@ -120,6 +181,10 @@
   </style>
 </head>
 <body>
+  <div class="header">
+    <h1>Live Sports Channels</h1>
+    <div class="search-icon">&#x1F50D;</div>
+  </div>
   <div class="navbar" id="navbar">
     <button class="close-btn" id="closeNavbar">&times;</button>
     <a href="https://www.instagram.com/younesbachouche" target="_blank">
@@ -132,24 +197,66 @@
     </a>
   </div>
   <div class="main">
-    <h1>Live Sports Channels</h1>
     <div class="category">
       <h2>beIN Sports Channels</h2>
       <div class="channel-list" id="beinChannelList"></div>
     </div>
     <div class="category">
-      <h2>Sky Sports Channels</h2>
-      <div class="channel-list" id="skyChannelList"></div>
+      <h2>SSC</h2>
+      <div class="channel-list" id="sscChannelList"></div>
     </div>
     <div class="category">
-      <h2>Algerian Channels</h2>
-      <div class="channel-list" id="algerianChannelList"></div>
+      <h2>beIN FR & RMC</h2>
+      <div class="channel-list" id="frChannelList"></div>
     </div>
+    <div class="category">
+      <h2>UK SPORTS</h2>
+      <div class="channel-list" id="ukChannelList"></div>
+    </div>
+    <div class="category">
+      <h2>DAZN BAR</h2>
+      <div class="channel-list" id="daznChannelList"></div>
+    </div>
+    <div class="category">
+      <h2>ELEVEN SPORT PR</h2>
+      <div class="channel-list" id="elevenChannelList"></div>
+    </div>
+  </div>
+  <div class="popup">
+    <button class="close-btn" id="closePopup">&times;</button>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e6/VLC_Icon.svg" alt="VLC Player" style="width: 80px;">
+    <h2>VLC PLAYER IS REQUIRED TO PLAY CHANNELS</h2>
   </div>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const navbar = document.getElementById('navbar');
       const closeNavbar = document.getElementById('closeNavbar');
+      const closePopup = document.getElementById('closePopup');
+      const searchIcon = document.querySelector('.search-icon');
+
+      closeNavbar.addEventListener('click', () => {
+        navbar.classList.remove('open');
+      });
+
+      closePopup.addEventListener('click', () => {
+        document.querySelector('.popup').style.display = 'none';
+      });
+
+      searchIcon.addEventListener('click', () => {
+        const searchTerm = prompt('Enter channel name to search:');
+        if (searchTerm) {
+          const allChannelCards = document.querySelectorAll('.channel-card');
+          allChannelCards.forEach(card => {
+            const channelName = card.querySelector('h3').textContent.toLowerCase();
+            if (channelName.includes(searchTerm.toLowerCase())) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        }
+      });
+
       const beinChannels = [
         {
           name: "beIN Sports 1",
@@ -167,34 +274,168 @@
           stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         }
       ];
-      const skyChannels = [
+
+      const sscChannels = [
         {
-          name: "Sky Sports 1",
-          image: "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Sky_Sports_logo_2020.svg/1200px-Sky_Sports_logo_2020.svg.png",
+          name: "SSC Channel 1",
+          image: "https://www.lyngsat.com/logo/tv/ss/ssc-1-sa.png",
           stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         },
         {
-          name: "Sky Sports 2",
-          image: "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Sky_Sports_logo_2020.svg/1200px-Sky_Sports_logo_2020.svg.png",
+          name: "SSC Channel 2",
+          image: "https://www.lyngsat.com/logo/tv/ss/ssc-2-sa.png",
           stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
-        }
+        },
+        {
+          name: "SSC Channel 3",
+          image: "https://www.lyngsat.com/logo/tv/ss/ssc-3-sa.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "SSC Channel 4",
+          image: "https://www.lyngsat.com/logo/tv/ss/ssc-4-sa.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "SSC Channel 5",
+          image: "https://www.lyngsat.com/logo/tv/ss/ssc-5-sa.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "SSC EXTRA 1",
+          image: "https://www.lyngsat.com/logo/tv/ss/ssc-extra-1-sa.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "SSC EXTRA 2",
+          image: "https://www.lyngsat.com/logo/tv/ss/ssc-extra-2-sa.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
       ];
-      const algerianChannels = [
+
+      const frChannels = [
         {
-          name: "ENTV",
-          image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/ENTV_logo.svg/1200px-ENTV_logo.svg.png",
+          name: "beIN SPORT 1 FR",
+          image: "https://www.lyngsat.com/logo/tv/bb/bein-sports-1-qa-fr.png",
           stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         },
         {
-          name: "Canal Algérie",
-          image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Canal_Algérie_Logo.svg/1200px-Canal_Algérie_Logo.svg.png",
+          name: "beIN SPORT 2 FR",
+          image: "https://www.lyngsat.com/logo/tv/bb/bein-sports-2-qa-fr.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "beIN SPORT 3 FR",
+          image: "https://www.lyngsat.com/logo/tv/bb/bein-sports-3-qa-fr.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "RMC SPORT 1",
+          image: "https://www.lyngsat.com/logo/tv/rr/rmc-sport-1-fr.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "RMC SPORT 2",
+          image: "https://www.lyngsat.com/logo/tv/rr/rmc-sport-2-fr.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+      ];
+
+      const ukChannels = [
+        {
+          name: "TNT SPORTS 1",
+          image: "https://www.lyngsat.com/logo/tv/tt/tnt-sports-1-uk.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "TNT SPORTS 2",
+          image: "https://www.lyngsat.com/logo/tv/tt/tnt-sports-2-uk.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "TNT SPORTS 3",
+          image: "https://www.lyngsat.com/logo/tv/tt/tnt-sports-3-uk.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "TNT SPORTS 4",
+          image: "https://www.lyngsat.com/logo/tv/tt/tnt-sports-4-uk.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "PREMIER SPORTS 1",
+          image: "https://www.lyngsat.com/logo/tv/pp/premier-sports-1-ie.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "PREMIER SPORTS 2",
+          image: "https://www.lyngsat.com/logo/tv/pp/premier-sports-2-ie.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "SKY SPORT FOOTBALL",
+          image: "https://www.lyngsat.com/logo/tv/ss/sky-sports-football-uk.svg",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "SKY SPORTS PREMIER LEAGUE",
+          image: "https://www.lyngsat.com/logo/tv/ss/sky-sports-premier-league-uk.svg",
           stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
         }
       ];
 
+      const daznChannels = [
+        {
+          name: "DAZN BAR 1",
+          image: "https://www.lyngsat.com/logo/tv/dd/dazn-1-uk.svg",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "DAZN BAR 2",
+          image: "https://www.lyngsat.com/logo/tv/dd/dazn-2-uk.svg",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        }
+      ];
+
+      const elevenChannels = [
+        {
+          name: "ELEVEN SPORT PR 1",
+          image: "https://www.lyngsat.com/logo/tv/dd/dazn-eleven-1-portugal-uk-pt.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "ELEVEN SPORT PR 2",
+          image: "https://www.lyngsat.com/logo/tv/dd/dazn-eleven-1-portugal-uk-pt.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "ELEVEN SPORT PR 3",
+          image: "https://www.lyngsat.com/logo/tv/dd/dazn-eleven-3-portugal-uk-pt.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "SPORT 1 TV PR",
+          image: "https://www.lyngsat.com/logo/tv/ss/sport-tv-1-pt.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "SPORT 2 TV PR",
+          image: "https://www.lyngsat.com/logo/tv/ss/sport-tv-2-pt.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+        {
+          name: "SPORT 3 TV PR",
+          image: "https://www.lyngsat.com/logo/tv/ss/sport-tv-3-pt.png",
+          stream: "vlc://https://samplelib.com/lib/preview/mp4/sample-5s.mp4"
+        },
+      ];
+
       const beinChannelList = document.getElementById('beinChannelList');
-      const skyChannelList = document.getElementById('skyChannelList');
-      const algerianChannelList = document.getElementById('algerianChannelList');
+      const sscChannelList = document.getElementById('sscChannelList');
+      const frChannelList = document.getElementById('frChannelList');
+      const ukChannelList = document.getElementById('ukChannelList');
+      const daznChannelList = document.getElementById('daznChannelList');
+      const elevenChannelList = document.getElementById('elevenChannelList');
 
       const renderChannels = (channels, container) => {
         channels.forEach(channel => {
@@ -212,18 +453,11 @@
       };
 
       renderChannels(beinChannels, beinChannelList);
-      renderChannels(skyChannels, skyChannelList);
-      renderChannels(algerianChannels, algerianChannelList);
-
-      closeNavbar.addEventListener('click', () => {
-        navbar.classList.remove('open');
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          navbar.classList.remove('open');
-        }
-      });
+      renderChannels(sscChannels, sscChannelList);
+      renderChannels(frChannels, frChannelList);
+      renderChannels(ukChannels, ukChannelList);
+      renderChannels(daznChannels, daznChannelList);
+      renderChannels(elevenChannels, elevenChannelList);
     });
   </script>
 </body>
